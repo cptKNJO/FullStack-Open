@@ -1,40 +1,46 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
 
 const Display = ({ counter }) => {
-    return <div>{counter}</div>
-}
+  return <div>{counter}</div>;
+};
 
 const Button = ({ handleClick, text }) => {
-    return (
-        <button onClick={handleClick}>
-            {text}
-        </button>
-    )
-}
+  return <button onClick={handleClick}>{text}</button>;
+};
 
-const App = (props) => {
-    const [ counter, setCounter ] = useState(0)
+const App = props => {
+  const [clicks, setClicks] = useState({
+    left: 0,
+    right: 0
+  });
 
-    const setToValue = (value) => setCounter(value)
+  const handleLeftClick = () => {
+    const newClicks = {
+      ...clicks,
+      left: clicks.left + 1
+    };
+    setClicks(newClicks);
+  };
 
-    return (
-        <div>
-            <Display counter={counter}/>
-            <Button 
-                handleClick={() => setToValue(counter + 1)} 
-                text="plus" 
-            />
-            <Button
-                handleClick={() => setToValue(counter - 1)}
-                text="minus"
-            />
-            <Button 
-                handleClick={() => setToValue(0)}
-                text="zero"
-            />
-        </div>
-    )
-}
+  const handleRightClick = () => {
+    const newClicks = {
+      ...clicks,
+      right: clicks.right + 1
+    };
+    setClicks(newClicks);
+  };
 
-ReactDOM.render(<App />, document.getElementById('root'))
+  return (
+    <div>
+      <div>
+        {clicks.left}
+        <button onClick={handleLeftClick}>left</button>
+        <button onClick={handleRightClick}>right</button>
+        {clicks.right}
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById("root"));
