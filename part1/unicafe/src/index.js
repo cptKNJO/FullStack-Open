@@ -29,12 +29,26 @@ const Positive = ({ good, total }) => {
   );
 };
 
+const Statistics = ({ good, neutral, bad }) => {
+  const total = good + neutral + bad
+  
+  return (
+    <div>
+      <Display feedback="good" amount={good} />
+      <Display feedback="neutral" amount={neutral} />
+      <Display feedback="bad" amount={bad} />
+      <Display feedback="all" amount={total} />
+      <Average good={good} bad={bad} total={total} />
+      <Positive good={good} total={total} />
+    </div>
+  )
+}
+
 const App = () => {
   // save clicks of each button to own state
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
-  const [total, setTotal] = useState(0);
 
   const setFeedback = feedback => {
     if (feedback === "good") {
@@ -44,7 +58,6 @@ const App = () => {
     } else {
       setBad(bad + 1);
     }
-    setTotal(total + 1);
   };
 
   return (
@@ -54,12 +67,7 @@ const App = () => {
       <Button handleClick={() => setFeedback("neutral")} text="neutral" />
       <Button handleClick={() => setFeedback("bad")} text="bad" />
       <h1>Statistics</h1>
-      <Display feedback="good" amount={good} />
-      <Display feedback="neutral" amount={neutral} />
-      <Display feedback="bad" amount={bad} />
-      <Display feedback="all" amount={total} />
-      <Average good={good} bad={bad} total={total} />
-      <Positive good={good} total={total} />
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   );
 };
