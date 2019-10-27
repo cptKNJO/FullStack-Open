@@ -1,7 +1,7 @@
 import React from "react";
 
 const CountryDetail = ({ country }) => {
-  const languages = country.languages.map(language => <li>{language.name}</li>);
+  const languages = country.languages.map(language => <li key={language.name}>{language.name}</li>);
 
   return (
     <div>
@@ -15,7 +15,7 @@ const CountryDetail = ({ country }) => {
         <ul>{languages}</ul>
       </div>
       <div>
-        <img src={country.flag} width="200" />
+        <img src={country.flag} alt={`Flag of ${country.name}`} width="200" />
       </div>
     </div>
   );
