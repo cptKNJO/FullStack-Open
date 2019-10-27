@@ -18,6 +18,17 @@ const App = () => {
       })
   }, [])
 
+  const deletePerson = person => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+        .remove(person.id)
+        .then(deletedPerson => {
+          console.log(`Deleted ${person.name} from server`)
+          setPersons(persons.filter(p => p.id !== person.id))
+        })
+    }
+  }
+
   const handleSearch = event => setSearch(event.target.value);
 
   const personsToShow =
@@ -40,7 +51,6 @@ const App = () => {
     };
 
     const matched = persons.find(person => person.name === newName);
-
     if (matched) {
       return alert(`${newName} is already added to the phonebook`);
     }
@@ -68,7 +78,7 @@ const App = () => {
         handleNewNumber={handleNewNumber}
       />
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} deletePerson={deletePerson} />
     </div>
   );
 };
