@@ -11,23 +11,19 @@ const App = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    personService
-      .getAll()
-      .then(initialPersons => {
-        setPersons(initialPersons);
-      })
-  }, [])
+    personService.getAll().then(initialPersons => {
+      setPersons(initialPersons);
+    });
+  }, []);
 
   const deletePerson = person => {
     if (window.confirm(`Delete ${person.name}?`)) {
-      personService
-        .remove(person.id)
-        .then(deletedPerson => {
-          console.log(`Deleted ${person.name} from server`)
-          setPersons(persons.filter(p => p.id !== person.id))
-        })
+      personService.remove(person.id).then(response => {
+        console.log(`Deleted ${person.name} from server`);
+        setPersons(persons.filter(p => p.id !== person.id));
+      });
     }
-  }
+  };
 
   const handleSearch = event => setSearch(event.target.value);
 
@@ -52,16 +48,26 @@ const App = () => {
 
     const matched = persons.find(person => person.name === newName);
     if (matched) {
-      return alert(`${newName} is already added to the phonebook`);
-    }
-
-    personService
-      .create(personObject)
-      .then(returnedPerson => {
+      if (
+        window.confirm(
+          `${matched.name} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        personService.update(matched.id, personObject).then(returnedPerson => {
+          console.log(returnedPerson);
+          setPersons(persons.map(p => p.id === matched.id ? returnedPerson : p));
+          setNewName("");
+          setNewNumber("");
+        });
+      }
+    } else {
+      console.log("what")
+      personService.create(personObject).then(returnedPerson => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
-      })
+      });
+    }
   };
 
   return (
