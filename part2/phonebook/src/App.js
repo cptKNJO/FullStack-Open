@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Notification from "./components/Notification";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
@@ -9,6 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then(initialPersons => {
@@ -55,17 +57,27 @@ const App = () => {
       ) {
         personService.update(matched.id, personObject).then(returnedPerson => {
           console.log(returnedPerson);
-          setPersons(persons.map(p => p.id === matched.id ? returnedPerson : p));
+          setPersons(
+            persons.map(p => (p.id === matched.id ? returnedPerson : p))
+          );
           setNewName("");
           setNewNumber("");
+          setSuccessMessage(`Updated ${matched.name}`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
         });
       }
     } else {
-      console.log("what")
+      console.log("what");
       personService.create(personObject).then(returnedPerson => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
+        setSuccessMessage(`Added ${returnedPerson.name}`);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
       });
     }
   };
@@ -73,6 +85,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={successMessage} />
+
       <Filter search={search} onChange={handleSearch} />
 
       <h3>Add a new</h3>
