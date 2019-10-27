@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
   const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then(initialPersons => {
@@ -55,21 +56,31 @@ const App = () => {
           `${matched.name} is already added to phonebook, replace the old number with a new one?`
         )
       ) {
-        personService.update(matched.id, personObject).then(returnedPerson => {
-          console.log(returnedPerson);
-          setPersons(
-            persons.map(p => (p.id === matched.id ? returnedPerson : p))
-          );
-          setNewName("");
-          setNewNumber("");
-          setSuccessMessage(`Updated ${matched.name}`);
-          setTimeout(() => {
-            setSuccessMessage(null);
-          }, 5000);
-        });
+        personService
+          .update(matched.id, personObject)
+          .then(returnedPerson => {
+            console.log(returnedPerson);
+            setPersons(
+              persons.map(p => (p.id === matched.id ? returnedPerson : p))
+            );
+            setNewName("");
+            setNewNumber("");
+            setSuccessMessage(`Updated ${matched.name}`);
+            setTimeout(() => {
+              setSuccessMessage(null);
+            }, 5000);
+          })
+          .catch(error => {
+            setErrorMessage(
+              `Information of ${matched.name} has already been removed from the server`
+            );
+            setPersons(persons.filter(p => p.id !== matched.id))
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
+          });
       }
     } else {
-      console.log("what");
       personService.create(personObject).then(returnedPerson => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
@@ -86,7 +97,10 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={successMessage} />
+      <Notification
+        successMessage={successMessage}
+        errorMessage={errorMessage}
+      />
 
       <Filter search={search} onChange={handleSearch} />
 
