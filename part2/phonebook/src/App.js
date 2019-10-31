@@ -15,6 +15,7 @@ const App = () => {
 
   useEffect(() => {
     personService.getAll().then(initialPersons => {
+      console.log(initialPersons)
       setPersons(initialPersons);
     });
   }, []);
@@ -82,10 +83,11 @@ const App = () => {
       }
     } else {
       personService.create(personObject).then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson));
+        console.log(returnedPerson, personObject)
+        setPersons(persons.concat(personObject));
         setNewName("");
         setNewNumber("");
-        setSuccessMessage(`Added ${returnedPerson.name}`);
+        setSuccessMessage(`Added ${personObject.name}`);
         setTimeout(() => {
           setSuccessMessage(null);
         }, 5000);
