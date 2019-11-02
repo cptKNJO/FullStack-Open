@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-// const morgan = require("morgan");
+const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const Person = require("./models/person");
@@ -33,14 +33,14 @@ app.use(cors());
 app.use(express.static("build"));
 app.use(bodyParser.json());
 
-// morgan.token("post", (req, res) => {
-//   if (req.method !== "POST") return " ";
-//   return JSON.stringify(req.body);
-// });
-// const logger = morgan(
-//   ":method :url :status :res[content-length] - :response-time ms :post"
-// );
-// app.use(logger);
+morgan.token("post", (req, res) => {
+  if (req.method !== "POST") return " ";
+  return JSON.stringify(req.body);
+});
+const logger = morgan(
+  ":method :url :status :res[content-length] - :response-time ms :post"
+);
+app.use(logger);
 
 app.get("/api/persons", (request, response) => {
   Person.find({}).then(persons => {
@@ -58,19 +58,21 @@ app.get("/info", (request, response) => {
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
 
-  Person.findById(id).then(result => {
-    response.json(result.toJSON());
-  }).catch(error => {
-    return response.status(404).end("No such person.");
-  })
-
+  Person.findById(id)
+    .then(result => {
+      response.json(result.toJSON());
+    })
+    .catch(error => {
+      return response.status(404).end("No such person.");
+    });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter(p => p.id !== id);
-
-  response.status(204).end();
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end();
+    })
+    .catch(error => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
@@ -91,13 +93,12 @@ app.post("/api/persons", (request, response) => {
 
   const person = new Person({
     name: body.name,
-    number: body.number,
+    number: body.number
   });
 
   person.save().then(personSaved => {
     response.json(personSaved.toJSON());
-  })
-
+  });
 });
 
 const unknownEndpoint = (request, response) => {
