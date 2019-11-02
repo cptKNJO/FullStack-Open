@@ -19,11 +19,14 @@ const logger = morgan(
 );
 app.use(logger);
 
-app.get("/info", (request, response) => {
-  response.write(`Phonebook has info for ${persons.length} people`);
-  response.write("\n\n");
-  response.write(new Date().toString());
-  response.end();
+app.get("/info", (request, response, next) => {
+  Person.countDocuments({}).then(count => {
+    response.write(`Phonebook has info for ${count} people`);
+    response.write("\n\n");
+    response.write(new Date().toString());
+    response.end();
+  })
+  .catch(error => next(error));
 });
 
 app.get("/api/persons", (request, response) => {
@@ -62,13 +65,6 @@ app.post("/api/persons", (request, response) => {
       error: "content missing"
     });
   }
-
-  // const personExists = persons.find(p => p.name === body.name);
-  // if (personExists) {
-  //   return response.status(400).json({
-  //     error: "name must be unique"
-  //   });
-  // }
 
   const person = new Person({
     name: body.name,
