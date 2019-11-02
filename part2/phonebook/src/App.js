@@ -15,7 +15,7 @@ const App = () => {
 
   useEffect(() => {
     personService.getAll().then(initialPersons => {
-      console.log(initialPersons)
+      console.log(initialPersons);
       setPersons(initialPersons);
     });
   }, []);
@@ -75,23 +75,32 @@ const App = () => {
             setErrorMessage(
               `Information of ${matched.name} has already been removed from the server`
             );
-            setPersons(persons.filter(p => p.id !== matched.id))
+            setPersons(persons.filter(p => p.id !== matched.id));
             setTimeout(() => {
               setErrorMessage(null);
             }, 5000);
           });
       }
     } else {
-      personService.create(personObject).then(returnedPerson => {
-        console.log(returnedPerson, personObject)
-        setPersons(persons.concat(personObject));
-        setNewName("");
-        setNewNumber("");
-        setSuccessMessage(`Added ${personObject.name}`);
-        setTimeout(() => {
-          setSuccessMessage(null);
-        }, 5000);
-      });
+      personService
+        .create(personObject)
+        .then(returnedPerson => {
+          console.log(returnedPerson)
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
+          setSuccessMessage(`Added ${returnedPerson.name}`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
+        })
+        .catch(error => {
+          console.log(error.response.data);
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        });
     }
   };
 
