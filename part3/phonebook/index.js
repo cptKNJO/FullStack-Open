@@ -6,29 +6,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const Person = require("./models/person");
 
-let persons = [
-  {
-    name: "Arto Hellas",
-    number: "040-123456",
-    id: 1
-  },
-  {
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-    id: 2
-  },
-  {
-    name: "Dan Abramov",
-    number: "12-43-234345",
-    id: 3
-  },
-  {
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-    id: 4
-  }
-];
-
 app.use(cors());
 app.use(express.static("build"));
 app.use(bodyParser.json());
@@ -42,17 +19,17 @@ const logger = morgan(
 );
 app.use(logger);
 
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons.map(person => person.toJSON()));
-  });
-});
-
 app.get("/info", (request, response) => {
   response.write(`Phonebook has info for ${persons.length} people`);
   response.write("\n\n");
   response.write(new Date().toString());
   response.end();
+});
+
+app.get("/api/persons", (request, response) => {
+  Person.find({}).then(persons => {
+    response.json(persons.map(person => person.toJSON()));
+  });
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
@@ -69,7 +46,7 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch(error => next(error));
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
     .then(result => {
       response.status(204).end();
@@ -101,6 +78,21 @@ app.post("/api/persons", (request, response) => {
   person.save().then(personSaved => {
     response.json(personSaved.toJSON());
   });
+});
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number
+  };
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson.toJSON())
+    })
+    .catch(error => next(error));
 });
 
 const unknownEndpoint = (request, response) => {
