@@ -55,16 +55,18 @@ app.get("/info", (request, response) => {
   response.end();
 });
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
 
   Person.findById(id)
-    .then(result => {
-      response.json(result.toJSON());
+    .then(person => {
+      if (person) {
+        response.json(person.toJSON());
+      } else {
+        response.status(404).end();
+      }
     })
-    .catch(error => {
-      return response.status(404).end("No such person.");
-    });
+    .catch(error => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -107,7 +109,19 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001;
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message);
+
+  if (error.name == "CastError" && error.kind === "ObjectId") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
+
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
