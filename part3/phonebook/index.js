@@ -56,12 +56,14 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find(p => p.id === id);
+  const id = request.params.id;
 
-  if (!person) return response.status(404).end("No such person.");
+  Person.findById(id).then(result => {
+    response.json(result.toJSON());
+  }).catch(error => {
+    return response.status(404).end("No such person.");
+  })
 
-  response.json(person);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -70,11 +72,6 @@ app.delete("/api/persons/:id", (request, response) => {
 
   response.status(204).end();
 });
-
-const generateId = () => {
-  const randomId = persons.length > 0 ? Math.floor(Math.random() * 100) : 0;
-  return randomId;
-};
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;
@@ -85,22 +82,22 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  const personExists = persons.find(p => p.name === body.name);
-  if (personExists) {
-    return response.status(400).json({
-      error: "name must be unique"
-    });
-  }
+  // const personExists = persons.find(p => p.name === body.name);
+  // if (personExists) {
+  //   return response.status(400).json({
+  //     error: "name must be unique"
+  //   });
+  // }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId()
-  };
+  });
 
-  persons = persons.concat(person);
+  person.save().then(personSaved => {
+    response.json(personSaved.toJSON());
+  })
 
-  response.json(persons);
 });
 
 const unknownEndpoint = (request, response) => {
