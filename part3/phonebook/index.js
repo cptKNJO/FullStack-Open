@@ -1,8 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 // const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const Person = require("./models/person");
 
 let persons = [
   {
@@ -27,8 +29,8 @@ let persons = [
   }
 ];
 
-app.use(express.static("build"));
 app.use(cors());
+app.use(express.static("build"));
 app.use(bodyParser.json());
 
 // morgan.token("post", (req, res) => {
@@ -40,12 +42,10 @@ app.use(bodyParser.json());
 // );
 // app.use(logger);
 
-app.get("/", (req, res) => {
-  res.send("<h1>Hello World</h1>");
-});
-
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then(persons => {
+    response.json(persons.map(person => person.toJSON()));
+  });
 });
 
 app.get("/info", (request, response) => {
