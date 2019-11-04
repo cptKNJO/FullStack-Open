@@ -24,23 +24,36 @@ const favouriteBlog = blogs => {
 };
 
 const mostBlogs = blogs => {
-  const authorBlogObj = _.countBy(blogs, "author");
-  const authorBlogArr = Object.keys(authorBlogObj).map(author => {
+  const authorBlogsObj = _.countBy(blogs, "author");
+  const authorBlogsArr = Object.keys(authorBlogsObj).map(author => {
     return {
       author: author,
-      blogs: authorBlogObj[author]
+      blogs: authorBlogsObj[author]
     };
   });
   const reducer = (most, curr) => {
     return most.blogs > curr.blogs ? most : curr;
   };
-  return authorBlogArr.reduce(reducer, {});
+  return authorBlogsArr.reduce(reducer, {});
 };
 
 const mostLikes = blogs => {
-  const authorLikesObj = _.countBy(blogs, "likes");
-  console.log(authorLikesObj)
-}
+  const authorLikes = {};
+  blogs.forEach(blog => {
+    if (!authorLikes.hasOwnProperty(blog.author)) {
+      authorLikes[blog.author] = 0;
+    }
+    authorLikes[blog.author] += blog.likes;
+  });
+  const authorLikesArr = Object.keys(authorLikes).map(author => ({
+    author: author,
+    likes: authorLikes[author]
+  }));
+  return authorLikesArr.reduce(
+    (most, curr) => (most.likes > curr.likes ? most : curr),
+    {}
+  );
+};
 
 module.exports = {
   dummy,
