@@ -32,14 +32,20 @@ const mostBlogs = blogs => {
     };
   });
   const reducer = (most, curr) => {
-    return (most.blogs > curr.blogs ? most : curr)
-  }
-  return authorBlogArr.reduce(reducer, {})
+    return most.blogs > curr.blogs ? most : curr;
+  };
+  return authorBlogArr.reduce(reducer, {});
 };
+
+const mostLikes = blogs => {
+  const authorLikesObj = _.countBy(blogs, "likes");
+  console.log(authorLikesObj)
+}
 
 module.exports = {
   dummy,
   totalLikes,
   favouriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 };
