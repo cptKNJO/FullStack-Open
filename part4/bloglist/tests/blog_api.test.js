@@ -57,6 +57,26 @@ test("a blog can be created", async () => {
   expect(contents).toContain("A valid blog");
 });
 
+test("missing likes property defaults to 0", async () => {
+  const newBlog = {
+    title: "Not liked blog",
+    author: "Captain",
+    url: "http://localhost:3003"
+  };
+
+  const returnedBlog = await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd.length).toBe(helper.initialBlogs.length + 1);
+
+  expect(returnedBlog.body.likes).toBeDefined();
+  expect(returnedBlog.body.likes).toBe(0);
+});
+
 afterAll(async () => {
   mongoose.connection.close();
 });
