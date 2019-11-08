@@ -27,13 +27,34 @@ test("all blogs are returned", async () => {
   expect(response.body.length).toBe(helper.initialBlogs.length);
 });
 
-test.only("blog object has a property called id", async () => {
+test("blog object has a property called id", async () => {
   await api.get("/api/blogs");
 
   const blogs = await helper.blogsInDb();
   const blogToCheck = blogs[0];
-  
+
   expect(blogToCheck.id).toBeDefined();
+});
+
+test("a blog can be created", async () => {
+  const newBlog = {
+    title: "A valid blog",
+    author: "Captain",
+    url: "http://localhost:3003",
+    likes: 10
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd.length).toBe(helper.initialBlogs.length + 1);
+
+  const contents = blogsAtEnd.map(b => b.title);
+  expect(contents).toContain("A valid blog");
 });
 
 afterAll(async () => {
