@@ -64,7 +64,7 @@ test("missing likes property defaults to 0", async () => {
     url: "http://localhost:3003"
   };
 
-  const returnedBlog = await api
+  const response = await api
     .post("/api/blogs")
     .send(newBlog)
     .expect(201)
@@ -73,8 +73,19 @@ test("missing likes property defaults to 0", async () => {
   const blogsAtEnd = await helper.blogsInDb();
   expect(blogsAtEnd.length).toBe(helper.initialBlogs.length + 1);
 
-  expect(returnedBlog.body.likes).toBeDefined();
-  expect(returnedBlog.body.likes).toBe(0);
+  expect(response.body.likes).toBeDefined();
+  expect(response.body.likes).toBe(0);
+});
+
+test.only("blog with missing title and url not saved", async () => {
+  const newBlog = {
+    url: "http://localhost:3003"
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(400);
 });
 
 afterAll(async () => {
