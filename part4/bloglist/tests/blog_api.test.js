@@ -134,6 +134,52 @@ describe("when there is initially some blogs saved", () => {
       expect(contents).not.toContain(blogToDelete.title);
     });
   });
+
+  describe("update likes of a specific blog", () => {
+    test("succeeds with a valid id", async () => {
+      const blogsAtStart = await helper.blogsInDb();
+      const blogToUpdate = blogsAtStart[0];
+      const startLikes = blogToUpdate.likes;
+
+      const newBlogLikes = {
+        likes: startLikes + 10
+      };
+
+      const resultBlog = await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(newBlogLikes)
+        .expect(200)
+        .expect("Content-Type", /application\/json/);
+
+      expect(resultBlog.body.likes).toBe(newBlogLikes.likes);
+    });
+
+    test("fails with statuscode 404 if blog does not exist", async () => {
+      const validNonexistingId = await helper.nonExistingId();
+      const newBlog = {
+        likes: 999
+      };
+
+      console.log(validNonexistingId);
+
+      await api
+        .put(`/api/blogs/${validNonexistingId}`)
+        .send(newBlog)
+        .expect(404);
+    });
+
+    test("fails with statuscode 400 id is invalid", async () => {
+      const invalidId = "5a3d5da59070081a82a3445";
+      const newBlog = {
+        likes: 999
+      };
+
+      await api
+        .put(`/api/blogs/${invalidId}`)
+        .send(newBlog)
+        .expect(400);
+    });
+  });
 });
 
 afterAll(async () => {
