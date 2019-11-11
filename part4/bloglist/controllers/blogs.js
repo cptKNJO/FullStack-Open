@@ -21,26 +21,17 @@ blogsRouter.get("/:id", async (request, response, next) => {
   }
 });
 
-const getFromToken = request => {
-  const authorization = request.get("authorization");
-  if (authorization && authorization.toLowerCase().startsWith("bearer")) {
-    return authorization.substring(7);
-  }
-  return null;
-};
-
 blogsRouter.post("/", async (request, response, next) => {
   const body = request.body;
+  // console.log(request.authorization, "blh");
 
   if (!(body.title && body.url)) {
     return response.status(400).send({ error: "no title and url" });
   }
 
-  const token = getFromToken(request);
-
   try {
-    const decodedToken = jwt.verify(token, process.env.SECRET);
-    if (!token || !decodedToken) {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET);
+    if (!request.token || !decodedToken) {
       return response.status(401).send({ error: "token missing or invalid" });
     }
 
