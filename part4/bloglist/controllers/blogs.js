@@ -55,7 +55,20 @@ blogsRouter.post("/", async (request, response, next) => {
 
 blogsRouter.delete("/:id", async (request, response, next) => {
   try {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+    const user = await User.findById(decodedToken.id);
+    const blog = await Blog.findById(request.params.id);
+
+    if (!(blog.user.toString() === user._id.toString())) {
+      return response.status(401).send({ error: "wrong user deleting" });
+    }
+
     await Blog.findByIdAndRemove(request.params.id);
+    user.blogs = user.blogs.filter(
+      blog => blog.toString() !== request.params.id
+    );
+    await user.save();
     response.status(204).end();
   } catch (exception) {
     next(exception);
