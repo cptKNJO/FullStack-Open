@@ -24,5 +24,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# remove practice folder with tutorial code
+# practice folder with tutorial code
 */practices/
+
+# notes to later transfer to Joplin
+notes.md
