@@ -8,7 +8,8 @@ import Blog from "./components/Blog";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [errorMessage, setErrorMessasge] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -50,9 +51,9 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessasge("Wrong credentials");
+      setErrorMessage("Wrong username or password");
       setTimeout(() => {
-        setErrorMessasge(null);
+        setErrorMessage(null);
       }, 5000);
     }
   };
@@ -74,17 +75,23 @@ const App = () => {
     };
 
     const newBlog = await blogService.create(newObject);
+    setSuccessMessage(`A new blog "${blog.title}" by ${blog.author} added`)
+
     setBlogs(blogs.concat(newBlog));
     setBlog({
       title: "",
       author: "",
       url: ""
     });
+
+    setTimeout(() => {
+      setSuccessMessage(null)
+    }, 5000)
   };
 
   return (
     <div className="App">
-      <Notification message={errorMessage} />
+      <Notification error={errorMessage} success={successMessage}/>
 
       {user === null ? (
         <LoginForm
