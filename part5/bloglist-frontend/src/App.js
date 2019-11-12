@@ -3,6 +3,7 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
+import BlogForm from "./components/BlogForm";
 import Blog from "./components/Blog";
 
 const App = () => {
@@ -11,6 +12,11 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+  const [blog, setBlog] = useState({
+    title: "",
+    author: "",
+    url: ""
+  });
 
   useEffect(() => {
     async function getBlogs() {
@@ -58,6 +64,24 @@ const App = () => {
     window.localStorage.removeItem("loggedBlogappUser");
   };
 
+  const addBlog = async event => {
+    event.preventDefault();
+
+    const newObject = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url
+    };
+
+    const newBlog = await blogService.create(newObject);
+    setBlogs(blogs.concat(newBlog));
+    setBlog({
+      title: "",
+      author: "",
+      url: ""
+    });
+  };
+
   return (
     <div className="App">
       <Notification message={errorMessage} />
@@ -72,9 +96,12 @@ const App = () => {
         />
       ) : (
         <div>
-          <h2>blogs</h2>
+          <h2>Blogs</h2>
           {user.name} logged in
           <button onClick={handleLogout}>logout</button>
+          <br></br>
+          <br></br>
+          <BlogForm onSubmit={addBlog} blog={blog} setBlog={setBlog} />
           <br></br>
           <br></br>
           <div>
