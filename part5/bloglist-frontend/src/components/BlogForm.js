@@ -1,8 +1,8 @@
 import React from "react";
 
-const BlogForm = ({ onSubmit, blog, setBlog }) => {
+const BlogForm = ({ onSubmit, blog, handleBlogChange }) => {
   const updateForm = event => {
-    setBlog({
+    handleBlogChange({
       ...blog,
       [event.target.name]: event.target.value
     });

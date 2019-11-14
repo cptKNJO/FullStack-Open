@@ -5,6 +5,7 @@ import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Blog from "./components/Blog";
+import Toggleable from "./components/Toggleable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -35,6 +36,30 @@ const App = () => {
       blogService.setToken(user.token);
     }
   }, []);
+
+  const loginForm = () => {
+    return (
+      <Toggleable buttonLabel="login">
+        <LoginForm
+          handleSubmit={handleLogin}
+          handleUsernameChange={setUsername}
+          handlePasswordChange={setPassword}
+          username={username}
+          password={password}
+        />
+      </Toggleable>
+    );
+  };
+
+  const blogFormRef = React.createRef();
+
+  const blogForm = () => {
+    return (
+      <Toggleable buttonLabel="new blog" ref={blogFormRef}>
+        <BlogForm onSubmit={addBlog} blog={blog} handleBlogChange={setBlog} />
+      </Toggleable>
+    );
+  };
 
   const handleLogin = async event => {
     event.preventDefault();
@@ -67,6 +92,7 @@ const App = () => {
 
   const addBlog = async event => {
     event.preventDefault();
+    blogFormRef.current.toggleVisibility();
 
     const newObject = {
       title: blog.title,
@@ -75,7 +101,7 @@ const App = () => {
     };
 
     const newBlog = await blogService.create(newObject);
-    setSuccessMessage(`A new blog "${blog.title}" by ${blog.author} added`)
+    setSuccessMessage(`A new blog "${blog.title}" by ${blog.author} added`);
 
     setBlogs(blogs.concat(newBlog));
     setBlog({
@@ -85,22 +111,16 @@ const App = () => {
     });
 
     setTimeout(() => {
-      setSuccessMessage(null)
-    }, 5000)
+      setSuccessMessage(null);
+    }, 5000);
   };
 
   return (
     <div className="App">
-      <Notification error={errorMessage} success={successMessage}/>
+      <Notification error={errorMessage} success={successMessage} />
 
       {user === null ? (
-        <LoginForm
-          onSubmit={handleLogin}
-          username={username}
-          setUsername={setUsername}
-          password={password}
-          setPassword={setPassword}
-        />
+        loginForm()
       ) : (
         <div>
           <h2>Blogs</h2>
@@ -108,7 +128,7 @@ const App = () => {
           <button onClick={handleLogout}>logout</button>
           <br></br>
           <br></br>
-          <BlogForm onSubmit={addBlog} blog={blog} setBlog={setBlog} />
+          {blogForm()}
           <br></br>
           <br></br>
           <div>
