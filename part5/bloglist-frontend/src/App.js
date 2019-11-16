@@ -17,7 +17,8 @@ const App = () => {
   const [blog, setBlog] = useState({
     title: "",
     author: "",
-    url: ""
+    url: "",
+    likes: 0
   });
 
   useEffect(() => {
@@ -49,6 +50,33 @@ const App = () => {
         />
       </Toggleable>
     );
+  };
+
+  const addBlog = async event => {
+    event.preventDefault();
+    blogFormRef.current.toggleVisibility();
+
+    const newObject = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: 0
+    };
+
+    const newBlog = await blogService.create(newObject);
+    setSuccessMessage(`A new blog "${blog.title}" by ${blog.author} added`);
+
+    setBlogs(blogs.concat(newBlog));
+    setBlog({
+      title: "",
+      author: "",
+      url: "",
+      likes: 0
+    });
+
+    setTimeout(() => {
+      setSuccessMessage(null);
+    }, 5000);
   };
 
   const blogFormRef = React.createRef();
@@ -90,31 +118,6 @@ const App = () => {
     window.localStorage.removeItem("loggedBlogappUser");
   };
 
-  const addBlog = async event => {
-    event.preventDefault();
-    blogFormRef.current.toggleVisibility();
-
-    const newObject = {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url
-    };
-
-    const newBlog = await blogService.create(newObject);
-    setSuccessMessage(`A new blog "${blog.title}" by ${blog.author} added`);
-
-    setBlogs(blogs.concat(newBlog));
-    setBlog({
-      title: "",
-      author: "",
-      url: ""
-    });
-
-    setTimeout(() => {
-      setSuccessMessage(null);
-    }, 5000);
-  };
-
   const changeLikes = async blogId => {
     const blog = blogs.find(b => b.id === blogId);
 
@@ -126,6 +129,27 @@ const App = () => {
 
     const returnedBlog = await blogService.update(blog.id, newBlog);
     setBlogs(blogs.map(blog => (blog.id === blogId ? returnedBlog : blog)));
+  };
+
+  const handleDelete = async blogId => {
+    // Only blog owners can delete them
+    const blog = blogs.find(b => b.id === blogId);
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      try {
+        const response = await blogService.remove(blogId);
+        console.log(response);
+        setBlogs(blogs.filter(b => b.id !== blogId));
+        setSuccessMessage(`Deleted ${blog.title} by ${blog.author}.`);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
+      } catch (exception) {
+        setErrorMessage("Only owner can delete.");
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      }
+    }
   };
 
   return (
@@ -145,13 +169,16 @@ const App = () => {
           <br></br>
           <br></br>
           <div>
-            {blogs.sort((a, b) => b.likes - a.likes).map(blog => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                changeLikes={() => changeLikes(blog.id)}
-              />
-            ))}
+            {blogs
+              .sort((a, b) => b.likes - a.likes)
+              .map(blog => (
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  changeLikes={() => changeLikes(blog.id)}
+                  handleDelete={() => handleDelete(blog.id)}
+                />
+              ))}
           </div>
         </div>
       )}
