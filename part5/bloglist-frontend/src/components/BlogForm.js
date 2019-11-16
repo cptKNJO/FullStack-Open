@@ -7,7 +7,7 @@ const BlogForm = ({ onSubmit, blog, handleBlogChange }) => {
       [event.target.name]: event.target.value
     });
   };
-  
+
   return (
     <div>
       <h2>Create new blog</h2>
