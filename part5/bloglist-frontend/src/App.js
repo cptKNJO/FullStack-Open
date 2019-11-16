@@ -115,6 +115,19 @@ const App = () => {
     }, 5000);
   };
 
+  const changeLikes = async blogId => {
+    const blog = blogs.find(b => b.id === blogId);
+
+    const newBlog = {
+      ...blog,
+      user: blog.user.id,
+      likes: blog.likes + 1
+    };
+
+    const returnedBlog = await blogService.update(blog.id, newBlog);
+    setBlogs(blogs.map(blog => (blog.id === blogId ? returnedBlog : blog)));
+  };
+
   return (
     <div className="App">
       <Notification error={errorMessage} success={successMessage} />
@@ -133,7 +146,11 @@ const App = () => {
           <br></br>
           <div>
             {blogs.map(blog => (
-              <Blog key={blog.id} blog={blog} />
+              <Blog
+                key={blog.id}
+                blog={blog}
+                changeLikes={() => changeLikes(blog.id)}
+              />
             ))}
           </div>
         </div>
