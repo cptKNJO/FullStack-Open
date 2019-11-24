@@ -1,3 +1,9 @@
+let token = null;
+
+const setToken = newToken => {
+  token = `bearer ${newToken}`;
+};
+
 const blogs = [
   {
     title: "Testing blog",
@@ -18,7 +24,7 @@ const blogs = [
     }
   },
   {
-    title: "Example",
+    title: "Example test",
     author: "Example Tester",
     url: "https://www.someRandomUrl.com",
     likes: 10,
@@ -32,4 +38,4 @@ const getAll = () => {
   return Promise.resolve(blogs);
 };
 
-export default { getAll };
+export default { getAll, setToken };
