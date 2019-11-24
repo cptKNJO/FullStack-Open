@@ -1,6 +1,5 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import { prettyDOM } from "@testing-library/dom";
 import SimpleBlog from "./SimpleBlog";
 
 describe("<SimpleBlog />", () => {
@@ -16,7 +15,6 @@ describe("<SimpleBlog />", () => {
     const title = component.container.querySelector(".title");
     const author = component.container.querySelector(".author");
     const likes = component.container.querySelector(".likes");
-    console.log(prettyDOM(likes));
 
     expect(author).toHaveTextContent("Tester");
     expect(title).toHaveTextContent(
