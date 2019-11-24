@@ -40,15 +40,15 @@ const App = () => {
 
   const loginForm = () => {
     return (
-      <Toggleable buttonLabel="login">
-        <LoginForm
-          handleSubmit={handleLogin}
-          handleUsernameChange={setUsername}
-          handlePasswordChange={setPassword}
-          username={username}
-          password={password}
-        />
-      </Toggleable>
+      // <Toggleable buttonLabel="login">
+      <LoginForm
+        handleSubmit={handleLogin}
+        handleUsernameChange={setUsername}
+        handlePasswordChange={setPassword}
+        username={username}
+        password={password}
+      />
+      // </Toggleable>
     );
   };
 

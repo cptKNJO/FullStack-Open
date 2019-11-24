@@ -14,7 +14,7 @@ const Blog = ({ blog, changeLikes, handleDelete, user }) => {
   const showWhenVisible = { display: showInfo ? "" : "none" };
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div className="summary" onClick={() => setShowInfo(!showInfo)}>
         <span className="title">{blog.title}</span>{" "}
         <span className="author">{blog.author}</span>}
