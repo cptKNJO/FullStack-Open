@@ -20,7 +20,7 @@ const Blog = ({ blog, changeLikes, handleDelete, user }) => {
         <span className="author">{blog.author}</span>
       </div>
       <div className="details" style={showWhenVisible}>
-        <a href="#">{blog.url}</a>
+        <a href={blog.url}>{blog.url}</a>
         <div>
           {blog.likes} likes
           <button onClick={changeLikes}>like</button>

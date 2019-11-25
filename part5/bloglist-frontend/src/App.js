@@ -18,12 +18,6 @@ const App = () => {
   const title = useField("text");
   const author = useField("text");
   const url = useField("text");
-  // const [blog, setBlog] = useState({
-  //   title: "",
-  //   author: "",
-  //   url: "",
-  //   likes: 0
-  // });
 
   useEffect(() => {
     async function getBlogs() {
@@ -46,8 +40,8 @@ const App = () => {
     return (
       <LoginForm
         handleSubmit={handleLogin}
-        username={username}
-        password={password}
+        username={username.input}
+        password={password.input}
       />
     );
   };
@@ -57,9 +51,9 @@ const App = () => {
     blogFormRef.current.toggleVisibility();
 
     const newObject = {
-      title: title.value,
-      author: author.value,
-      url: url.value,
+      title: title.input.value,
+      author: author.input.value,
+      url: url.input.value,
       likes: 0
     };
 
@@ -67,6 +61,9 @@ const App = () => {
     setSuccessMessage(`A new blog "${title.value}" by ${author.value} added`);
 
     setBlogs(blogs.concat(newBlog));
+    title.reset();
+    author.reset();
+    url.reset();
 
     setTimeout(() => {
       setSuccessMessage(null);
@@ -78,7 +75,7 @@ const App = () => {
   const blogForm = () => {
     return (
       <Toggleable buttonLabel="new blog" ref={blogFormRef}>
-        <BlogForm onSubmit={addBlog} title={title} author={author} url={url} />
+        <BlogForm onSubmit={addBlog} title={title.input} author={author.input} url={url.input} />
       </Toggleable>
     );
   };
@@ -87,14 +84,16 @@ const App = () => {
     event.preventDefault();
     try {
       const user = await loginService.login({
-        username: username.value,
-        password: password.value
+        username: username.input.value,
+        password: password.input.value
       });
 
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
 
       blogService.setToken(user.token);
       setUser(user);
+      username.reset();
+      password.reset();
     } catch (exception) {
       setErrorMessage("Wrong username or password");
       setTimeout(() => {
