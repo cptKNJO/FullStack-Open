@@ -17,7 +17,7 @@ const Blog = ({ blog, changeLikes, handleDelete, user }) => {
     <div className="blog" style={blogStyle}>
       <div className="summary" onClick={() => setShowInfo(!showInfo)}>
         <span className="title">{blog.title}</span>{" "}
-        <span className="author">{blog.author}</span>}
+        <span className="author">{blog.author}</span>
       </div>
       <div className="details" style={showWhenVisible}>
         <a href="#">{blog.url}</a>

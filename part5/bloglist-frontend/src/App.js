@@ -12,17 +12,18 @@ const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  // const [username, setUsername] = useState("");
-  // const [password, setPassword] = useState("");
   const username = useField("text");
   const password = useField("password");
   const [user, setUser] = useState(null);
-  const [blog, setBlog] = useState({
-    title: "",
-    author: "",
-    url: "",
-    likes: 0
-  });
+  const title = useField("text");
+  const author = useField("text");
+  const url = useField("text");
+  // const [blog, setBlog] = useState({
+  //   title: "",
+  //   author: "",
+  //   url: "",
+  //   likes: 0
+  // });
 
   useEffect(() => {
     async function getBlogs() {
@@ -43,15 +44,11 @@ const App = () => {
 
   const loginForm = () => {
     return (
-      // <Toggleable buttonLabel="login">
       <LoginForm
         handleSubmit={handleLogin}
-        // handleUsernameChange={setUsername}
-        // handlePasswordChange={setPassword}
         username={username}
         password={password}
       />
-      // </Toggleable>
     );
   };
 
@@ -60,22 +57,16 @@ const App = () => {
     blogFormRef.current.toggleVisibility();
 
     const newObject = {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
+      title: title.value,
+      author: author.value,
+      url: url.value,
       likes: 0
     };
 
     const newBlog = await blogService.create(newObject);
-    setSuccessMessage(`A new blog "${blog.title}" by ${blog.author} added`);
+    setSuccessMessage(`A new blog "${title.value}" by ${author.value} added`);
 
     setBlogs(blogs.concat(newBlog));
-    setBlog({
-      title: "",
-      author: "",
-      url: "",
-      likes: 0
-    });
 
     setTimeout(() => {
       setSuccessMessage(null);
@@ -87,7 +78,7 @@ const App = () => {
   const blogForm = () => {
     return (
       <Toggleable buttonLabel="new blog" ref={blogFormRef}>
-        <BlogForm onSubmit={addBlog} blog={blog} handleBlogChange={setBlog} />
+        <BlogForm onSubmit={addBlog} title={title} author={author} url={url} />
       </Toggleable>
     );
   };
